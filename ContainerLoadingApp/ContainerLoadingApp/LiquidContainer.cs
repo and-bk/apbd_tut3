@@ -1,12 +1,10 @@
 ﻿namespace ContainerLoadingApp;
 
-public class LiquidContainer(double height, double depth, double tareWeight, double maxPayload) : IHazardNotifier
+public class LiquidContainer(double tareWeight, double maxPayload) : IHazardNotifier
 {
     public double CargoMass { get; set; } = tareWeight;
-    public double Height {get; set;} = height;
     public double TareWeight {get; set;} = tareWeight;
     public double CargoWeight { get; set; }
-    public double Depth {get; set;} = depth;
     public double MaxPayload {get; set;} = maxPayload;
     public string SerialNumber { get; set; } = GenerateSerialNumber();
 
@@ -20,14 +18,18 @@ public class LiquidContainer(double height, double depth, double tareWeight, dou
     public void EmptyCargo()
     {
         CargoWeight = 0;
+        CargoMass = TareWeight;
+        Console.WriteLine("Container was emptied");
+        Console.WriteLine("Container is 0% full");
     }
 
     public void LoadOrdinaryCargo(double cargoWeight)
     {
+        Console.WriteLine("Loading cargo to container: " + SerialNumber);
         CargoWeight += cargoWeight;
         CargoMass += cargoWeight;
         double fillPercent = (CargoWeight / MaxPayload) * 100;
-        Console.WriteLine(fillPercent + "%");
+        Console.WriteLine("Container is " + fillPercent + "% full");
 
         if (fillPercent > 90)
         {
@@ -42,15 +44,16 @@ public class LiquidContainer(double height, double depth, double tareWeight, dou
     }
     public void LoadHazardCargo(double cargoWeight)
     {
+        Console.WriteLine("Loading cargo to container: " + SerialNumber);
         Notify();
         CargoWeight += cargoWeight;
         CargoMass += cargoWeight;
         double fillPercent = (CargoWeight / MaxPayload) * 100;
-        Console.WriteLine(fillPercent + "%");
+        Console.WriteLine("Container is " + fillPercent + "% full");
 
         if (fillPercent > 50)
         {
-            CargoMass = 0;
+            CargoMass = TareWeight;
             throw new OverfillException("Hazard cargo weight cannot be greater than 50% of the payload!!!");
         }
     }
